@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as clerk from "../clerk.js";
 import type * as files from "../files.js";
 
 /**
@@ -24,6 +25,7 @@ import type * as files from "../files.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  clerk: typeof clerk;
   files: typeof files;
 }>;
 export declare const api: FilterApi<
