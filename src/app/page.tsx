@@ -31,6 +31,7 @@ import { useForm } from "react-hook-form"
 
 
 import { z } from "zod"
+import { useState } from "react"
 
 const formSchema = z.object({
 title: z.string().min(1).max(200),
@@ -42,6 +43,7 @@ file: z.custom<FileList>((val) => val instanceof FileList, "Required")
 export default function Home() {
 const  organization= useOrganization();
 const user = useUser()
+const generatedUploadUrl = useMutation(api.files.generateUploadUrl)
 
 const form = useForm<z.infer<typeof formSchema>>({
   resolver: zodResolver(formSchema),
@@ -53,15 +55,42 @@ const form = useForm<z.infer<typeof formSchema>>({
 
 const fileRef = form.register("file");
 
-function onSubmit(values: z.infer<typeof formSchema>) {
+async function onSubmit(values: z.infer<typeof formSchema>) {
 
   console.log(values)
+  console.log(values.file);
+  if (!orgId) return;
+
+
+
+  const postUrl = await generatedUploadUrl();
+
+
+  const result = await fetch(postUrl, {
+    method: "POST",
+    headers: { "Content-Type":values.file[0].type },
+    body: values.file[0],
+  });
+
+  const { storageId } = await result.json();
+
+  
+  await createFile({
+    name:values.title,
+    fileId: storageId,
+    orgId,
+  })
+
+  form.reset();
+  setIsFileDailogOpen(false)
 }
 
 let orgId:string | undefined = undefined;
 if (organization.isLoaded && user.isLoaded) {
   orgId = organization.organization?.id ?? user.user?.id;
 }
+
+const [isFileDialogueOpen, setIsFileDailogOpen] = useState(false)
 const createFile = useMutation(api.files.createFile)
 const files = useQuery(api.files.getFile, orgId ? {orgId} : "skip");
   return (
@@ -69,14 +98,10 @@ const files = useQuery(api.files.getFile, orgId ? {orgId} : "skip");
     <div className="flex justify-between items-center">
     <h1 className="">Your Files</h1>
 
-    <Dialog>
+    <Dialog open={isFileDialogueOpen} onOpenChange={setIsFileDailogOpen}>
       <DialogTrigger asChild>
         <Button onClick={() => {
-      if(!orgId) return;
-      createFile({
-        name:"Hello World",
-        orgId,
-      })
+   
     }}>CLick Me</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
