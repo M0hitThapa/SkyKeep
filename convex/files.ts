@@ -78,3 +78,35 @@ export const getFile = query({
         return ctx.db.query('files').withIndex('by_orgId', q => q.eq('orgId', args.orgId)).collect()
     }
 })
+
+export const deleteFile = mutation({
+    args: { fileId:v.id("files")},
+    async handler(ctx,args) {
+        const identity = await ctx.auth.getUserIdentity();
+        if(!identity) {
+            throw new ConvexError("you do not have access to this org");
+        }
+
+        const file = await ctx.db.get(args.fileId);
+
+        if(!file) {
+            throw new ConvexError("this file doesnot exist")
+        }
+        if (!file.orgId) {
+            throw new ConvexError("File is missing orgId");
+          }
+        
+
+        const hasAccess = await hasAccessToOrg(
+            ctx,
+            identity.tokenIdentifier,
+            file.orgId
+           
+        );
+        if(!hasAccess) {
+            throw new ConvexError("you donot have access to delete this file ")
+        }
+
+        await ctx.db.delete(args.fileId);
+    }
+})
