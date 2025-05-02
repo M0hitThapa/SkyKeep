@@ -99,7 +99,7 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(err)
     toast.custom((t) => (
       <div
-        className="bg-red-600 text-white px-8 py-4 rounded shadow"
+        className="bg-[#9b2c2c] text-white px-8 py-4 rounded shadow"
         onClick={() => toast.dismiss(t)}
       >
         ❌ Error: Something went wrong!
