@@ -27,6 +27,8 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+
 
 
 
@@ -74,15 +76,39 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
 
   const { storageId } = await result.json();
 
-  
-  await createFile({
-    name:values.title,
-    fileId: storageId,
-    orgId,
-  })
+  try {
+    await createFile({
+      name:values.title,
+      fileId: storageId,
+      orgId,
+    })
 
-  form.reset();
-  setIsFileDailogOpen(false)
+    form.reset();
+    setIsFileDailogOpen(false)
+  
+    toast.custom((t) => (
+      <div
+        className="bg-green-600 text-white px-4 py-2 rounded shadow"
+        onClick={() => toast.dismiss(t)}
+      >
+        ✅ Success: Uploaded File
+      </div>
+    ));
+  } catch (err) {
+    console.log(err)
+    toast.custom((t) => (
+      <div
+        className="bg-red-600 text-white px-4 py-2 rounded shadow"
+        onClick={() => toast.dismiss(t)}
+      >
+        ❌ Error: Something went wrong!
+      </div>
+    ));
+  }
+ 
+
+ 
+
 }
 
 let orgId:string | undefined = undefined;
@@ -98,7 +124,9 @@ const files = useQuery(api.files.getFile, orgId ? {orgId} : "skip");
     <div className="flex justify-between items-center">
     <h1 className="">Your Files</h1>
 
-    <Dialog open={isFileDialogueOpen} onOpenChange={setIsFileDailogOpen}>
+    <Dialog open={isFileDialogueOpen} onOpenChange={(isOpen) => {setIsFileDailogOpen(isOpen)
+      form.reset();
+    }}>
       <DialogTrigger asChild>
         <Button onClick={() => {
    
