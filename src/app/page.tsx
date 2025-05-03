@@ -22,16 +22,17 @@ if (organization.isLoaded && user.isLoaded) {
 
 
 const files = useQuery(api.files.getFile, orgId ? {orgId} : "skip");
+const isLoading = files === undefined;
   return (
    <main className="container mx-auto pt-12">
-    {files === undefined && (
+    {isLoading && (
      <div className="flex flex-col gap-8 items-center mt-24">
       <Loader2 className="h-32 w-32 animate-spin text-slate-400" />
       <div className="text-2xl">Loading Your Files...</div>
      </div>
     )}
   
-    {files && files.length === 0 && (
+    {!isLoading && files.length === 0 && (
       <div className="flex flex-col gap-8 items-center mt-24">
 
       
@@ -40,7 +41,7 @@ const files = useQuery(api.files.getFile, orgId ? {orgId} : "skip");
       <UploadButton />
       </div>
     )}
-    {files && files.length > 0 && (
+    {!isLoading && files.length > 0 && (
       <>
       <div className="flex justify-between items-center mb-8">
     <h1 className="">Your Files</h1>

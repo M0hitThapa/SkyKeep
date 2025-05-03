@@ -19,7 +19,7 @@ import {
 
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-import { MoreVertical, TrashIcon } from "lucide-react"
+import {  FileText, GanttChart, ImageIcon, MoreVertical, TrashIcon } from "lucide-react"
 
 import {
     AlertDialog,
@@ -32,10 +32,11 @@ import {
     AlertDialogTitle,
   
   } from "@/components/ui/alert-dialog"
-import { useState } from "react"
+import { ReactNode, useState } from "react"
 import { useMutation } from "convex/react"
 import { api } from "../../convex/_generated/api"
 import {toast} from "sonner"
+import Image from "next/image"
   
   
 
@@ -87,6 +88,13 @@ return (
 
 
 export function FileCard({file}: {file: Doc<"files">}) {
+
+  const typeIcons = {
+    'image':<ImageIcon />,
+    'pdf':<FileText />,
+    'csv':<GanttChart />,
+  } as Record<Doc<"files">["type"],ReactNode>;
+
     return (
 <Card>
   <CardHeader className="relative">
@@ -96,7 +104,9 @@ export function FileCard({file}: {file: Doc<"files">}) {
     {/* <CardDescription>Card Description</CardDescription> */}
   </CardHeader>
   <CardContent>
-    <p>Card Content</p>
+    <p className="flex gap-2">{typeIcons[file.type]} {file.type ==="image" && (
+      <Image src={file} alt={file.name} width="200" height="200" />
+    )}</p>
   </CardContent>
   <CardFooter>
   
