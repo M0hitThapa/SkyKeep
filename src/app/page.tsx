@@ -8,6 +8,7 @@ import { UploadButton } from "./upload-button"
 import { FileCard } from "./fileCard";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
+import SearchBar from "./search-bar";
 
 
 
@@ -46,19 +47,24 @@ const isLoading = files === undefined;
       <div className="flex justify-between items-center mb-8">
     <h1 className="">Your Files</h1>
 
+
 <UploadButton />
     </div>
-      </>
-    )}
-   <div className="grid grid-cols-4 gap-4">
+
+    <SearchBar />
+
+    <div className="grid grid-cols-3 gap-4">
     
     
 
     
-   {files?.map(file => {
-      return <FileCard key={file._id} file={file} />
-    })}
-   </div>
+    {files?.map(file => {
+       return <FileCard key={file._id} file={file} />
+     })}
+    </div>
+      </>
+    )}
+
     
    
   

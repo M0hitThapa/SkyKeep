@@ -4,6 +4,9 @@ import {mutation, MutationCtx, query, QueryCtx} from "./_generated/server";
 import { getUser } from "./users";
 import { fileTypes } from "./schema";
 
+
+
+
 export const generateUploadUrl = mutation({
     handler: async (ctx) => {
 
@@ -114,3 +117,12 @@ export const deleteFile = mutation({
     }
 })
 
+export const getFileUrl = query({
+    args: {
+      fileId: v.id("_storage"),
+    },
+    handler: async (ctx, args) => {
+      const url = await ctx.storage.getUrl(args.fileId);
+      return url;
+    },
+  });
